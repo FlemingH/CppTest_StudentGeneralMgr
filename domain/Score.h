@@ -1,6 +1,4 @@
-//成绩类
-#pragma once 
-#include "stdafx.h"
+//成绩类 
 
 class Score{
 	private:

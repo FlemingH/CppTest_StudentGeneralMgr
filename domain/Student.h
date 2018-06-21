@@ -1,6 +1,4 @@
 //Ñ§ÉúÀà
-#pragma once
-#include "stdafx.h"
 
 class Student{
 	private:

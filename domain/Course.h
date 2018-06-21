@@ -1,6 +1,4 @@
 //¿Î³ÌÀà
-#pragma once 
-#include "stdafx.h"
 
 class Course {
 	private:
@@ -15,7 +13,7 @@ class Course {
 		
 		~Course(){}
 		
-		std::toString(){
+		std::string toString(){
 			return 	"courseId£º"	+this->courseId		+","+
 					"courseCode£º"	+this->courseCode	+","+
 					"courseName£º"	+this->courseName	+","+
