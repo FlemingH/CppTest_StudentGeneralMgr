@@ -18,9 +18,9 @@ class Course {
 		
 		string toString(){
 			return 	"courseId："	+this->courseId		+","+
-				"courseCode："	+this->courseCode	+","+
-				"courseName："	+this->courseName	+","+
-				"courseT："	+this->courseT;
+					"courseCode："	+this->courseCode	+","+
+					"courseName："	+this->courseName	+","+
+					"courseT："		+this->courseT;
 		}
 		
 		void setCourseId(string courseId){
@@ -73,8 +73,8 @@ class Score{
 		
 		string toString(){
 			return 	"s_name："		+this->s_name		+","+
-				"courseName："		+this->courseName	+","+
-				"mark："		+this->mark;
+					"courseName："	+this->courseName	+","+
+					"mark："		+this->mark;
 		}
 		
 		void setS_name(string s_name){
@@ -119,9 +119,9 @@ class Student{
 		
 		string toString(){
 			return 	"id："		+this->s_id		+","+
-				"name："	+this->s_name		+","+
-				"sex："		+this->s_sex		+","+
-				"class："	+this->s_class; 
+					"name："	+this->s_name	+","+
+					"sex："		+this->s_sex	+","+
+					"class："	+this->s_class; 
 		}
 		
 		void setS_id(string s_id){
@@ -190,6 +190,80 @@ class StudentSvc{		//学生管理接口（抽象类）
 };
 
 //------------------------------------------------------------------------------
+
+map<string, Course> courseMap;
+map<string, Score> scoreMap1;
+map<string, Score> scoreMap2;
+map<string, Student> studentMap;
+
+//------------------------------------------------------------------------------
+
+class CourseSvcImpl: public CourseSvc{
+	
+	public:
+		void addCourse(Course course){
+			courseMap[course.getCourseId()] == course;
+		}
+		
+		int removeCourse(string courseId){
+			//int返回值为删除状态（删除成功返回1，否则返回0）
+			int n = courseMap.erase(courseId);
+			
+			return n; 
+		} 
+	
+		void modifyCourse(Course course){			 
+			//直接调用add方法，不改id的情况下自动覆盖记录，达到修改的效果 	
+			this->addCourse(course);
+			
+		}
+	
+		Course queryCourse(string courseId){		
+			
+			Course courseDefault;
+			
+			map<string, Student>::iterator iter;
+			for(iter = courseMap.begin(); iter != courseMap.end(); iter++) {
+	    		
+	    		if(string(iter->first) == string(courseId)){
+	    			return iter->second;
+	    			break;
+	    		}
+	    		
+			}
+			
+			return courseDefault;
+		}
+	
+};
+
+//------------------------------------------------------------------------------
+
+class ScoreSvcImpl: public ScoreSvc{
+	
+	public:
+		void addScore(Score score){
+			
+		}
+		
+		int removeScore(string s_name, string courseName){
+			
+		} 
+	
+		void modifyScore(Score score){			 
+			//直接调用add方法，不改id的情况下自动覆盖记录，达到修改的效果 	
+			this->addScore(score)
+			
+		}
+	
+		Score queryScore(string s_name, string courseName){		
+			
+			Scroe ScoreDefault;
+			
+			return ScoreDefault;
+		}
+	
+};
 
 int main(){
 	return 0;
