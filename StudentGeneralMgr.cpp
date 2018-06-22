@@ -1,5 +1,16 @@
-#include <iostream>
-#include <string>
+#include <iostream>  
+#include <vector>  
+#include <list>  
+#include <deque>  
+#include <string>  
+#include <numeric>  
+#include <algorithm>  
+#include <sstream>
+#include <map>
+#include <conio.h>
+#include <stdio.h>
+#include <fstream>
+#include <iomanip>
 using namespace std;
 
 class Course {
@@ -192,8 +203,7 @@ class StudentSvc{		//学生管理接口（抽象类）
 //------------------------------------------------------------------------------
 
 map<string, Course> courseMap;
-map<string, Score> scoreMap1;
-map<string, Score> scoreMap2;
+map<string, string> scoreMap;
 map<string, Student> studentMap;
 
 //------------------------------------------------------------------------------
@@ -202,7 +212,7 @@ class CourseSvcImpl: public CourseSvc{
 	
 	public:
 		void addCourse(Course course){
-			courseMap[course.getCourseId()] == course;
+			courseMap[course.getCourseId()] = course;
 		}
 		
 		int removeCourse(string courseId){
@@ -222,7 +232,7 @@ class CourseSvcImpl: public CourseSvc{
 			
 			Course courseDefault;
 			
-			map<string, Student>::iterator iter;
+			map<string, Course>::iterator iter;
 			for(iter = courseMap.begin(); iter != courseMap.end(); iter++) {
 	    		
 	    		if(string(iter->first) == string(courseId)){
@@ -243,28 +253,89 @@ class ScoreSvcImpl: public ScoreSvc{
 	
 	public:
 		void addScore(Score score){
-			
+			string info = score.getS_name()+"|"+score.getCourseName();
+			scoreMap[info] = score.getMark();
 		}
 		
 		int removeScore(string s_name, string courseName){
 			
+			string info = s_name+"|"+courseName;
+			int n = scoreMap.erase(info);
+		
+			return 0;
 		} 
 	
 		void modifyScore(Score score){			 
-			//直接调用add方法，不改id的情况下自动覆盖记录，达到修改的效果 	
-			this->addScore(score)
+		 	
+			this->addScore(score);
 			
 		}
 	
 		Score queryScore(string s_name, string courseName){		
 			
-			Scroe ScoreDefault;
+			Score ScoreDefault;
+			string info = s_name+"|"+courseName;
+			
+			map<string, string>::iterator iter;
+			for(iter = scoreMap.begin(); iter != scoreMap.end(); iter++) {
+	    		
+	    		if(string(iter->first) == string(info)){
+	    			ScoreDefault.setS_name(s_name);
+	    			ScoreDefault.setCourseName(courseName);
+	    			ScoreDefault.setMark(iter->second);
+	    			return ScoreDefault;
+	    			break;
+	    		}
+	    		
+			}
 			
 			return ScoreDefault;
 		}
 	
 };
 
+//------------------------------------------------------------------------------
+
+class StudentSvcImpl: public StudentSvc{
+	
+	public:
+		void addStudent(Student student){
+			studentMap[student.getS_id()] = student;
+		}
+		
+		int removeStudent(string s_id){
+			//int返回值为删除状态（删除成功返回1，否则返回0）
+			int n = studentMap.erase(s_id);
+			
+			return n; 
+		} 
+	
+		void modifyStudent(Student student){			 
+			//直接调用add方法，不改id的情况下自动覆盖记录，达到修改的效果 	
+			this->addStudent(student);
+			
+		}
+	
+		Student queryStudent(string s_id){		
+			
+			Student StudentDefault;
+			
+			map<string, Student>::iterator iter;
+			for(iter = studentMap.begin(); iter != studentMap.end(); iter++) {
+	    		
+	    		if(string(iter->first) == string(s_id)){
+	    			return iter->second;
+	    			break;
+	    		}
+	    		
+			}
+			
+			return StudentDefault;
+		}
+	
+};
+
 int main(){
+	
 	return 0;
 }
