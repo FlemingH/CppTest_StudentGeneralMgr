@@ -262,7 +262,7 @@ class ScoreSvcImpl: public ScoreSvc{
 			string info = s_name+"|"+courseName;
 			int n = scoreMap.erase(info);
 		
-			return 0;
+			return n;
 		} 
 	
 		void modifyScore(Score score){			 
@@ -358,6 +358,31 @@ void courseRemove();
 void courseFileo();
 void courseFilei();
 
+void scoreAdd(); 
+void scoreQuery();
+void scoreModify();
+void scoreRemove();
+void scoreFileo();
+void scoreFilei();
+
+//字符串分割函数 
+void Tokenize(const string& str, vector<string>& tokens, const string& delimiters)
+{
+  // Skip delimiters at beginning.
+  string::size_type lastPos = str.find_first_not_of(delimiters, 0);
+  // Find first "non-delimiter".
+  string::size_type pos     = str.find_first_of(delimiters, lastPos);
+  while (string::npos != pos || string::npos != lastPos)
+  {
+    // Found a token, add it to the vector.
+    tokens.push_back(str.substr(lastPos, pos - lastPos));
+    // Skip delimiters.  Note the "not_of"
+    lastPos = str.find_first_not_of(delimiters, pos);
+    // Find next "non-delimiter"
+    pos = str.find_first_of(delimiters, lastPos);
+  }
+}
+
 void zhuCaiDan(){
 	
 	system("cls"); 
@@ -397,7 +422,7 @@ void zhuCaiDan(){
            		courseMgr();
                 break;  
             case '3':  
-            	//scoreMgr();
+            	scoreMgr();
                 break;  
             case '4':  
               	//scoreAys();
@@ -478,7 +503,7 @@ void studentMgr(){
         }  
 	} 
 	
-}
+};
 
 //------------------------------------------------------------------------------
 
@@ -803,7 +828,7 @@ void courseMgr(){
         }  
 	} 
 	
-}
+}; 
 
 //------------------------------------------------------------------------------
 
@@ -1061,6 +1086,300 @@ void courseFileo(){			//写入数据(写入之前清空文件)
 	courseMgr();
 	
 }; 
+
+//------------------------------------------------------------------------------ 
+
+void scoreMgr(){
+	
+	system("cls"); 
+	cout<<"\n\n\n";
+	cout<<"\t-----------------------------------------------------"<<endl;  
+    cout<<"\t-----------------------------------------------------"<<endl;  
+    cout<<"\t||                                                 ||"<<endl;  
+    cout<<"\t||                     成绩管理                    ||"<<endl;  
+    cout<<"\t||                                                 ||"<<endl;  
+    cout<<"\t-----------------------------------------------------"<<endl;  
+    cout<<"\t-----------------------------------------------------"<<endl;  
+    cout<<"\t||                                                 ||"<<endl;  
+    cout<<"\t||                                                 ||"<<endl;  
+    cout<<"\t||                  ◆1.添加成绩                   ||"<<endl;  
+    cout<<"\t||                  ◆2.查询成绩                   ||"<<endl;
+    cout<<"\t||                  ◆3.修改成绩                   ||"<<endl;  
+    cout<<"\t||                  ◆4.删除成绩                   ||"<<endl;  
+    cout<<"\t||                  ◆5.保存（文本文件）           ||"<<endl; 
+	cout<<"\t||                  ◆6.读取数据（文本文件）       ||"<<endl;
+	cout<<"\t||                  ◆0.返回                       ||"<<endl;  
+    cout<<"\t||                                                 ||"<<endl;  
+    cout<<"\t||                                                 ||"<<endl;  
+    cout<<"\t-----------------------------------------------------"<<endl;  
+	cout<<"\t-----------------------------------------------------"<<endl; 
+	
+	char x;      
+    bool flag = true;  
+    while(flag)  
+    {                      
+        x = getch();  
+        system("cls");  
+        fflush(stdin);  
+        switch(x)  
+        {  
+            case '1':  
+				scoreAdd();
+                break;  
+            case '2':  
+           		scoreQuery();
+                break;
+            case '3':  
+              	scoreModify();  
+                break;  
+            case '4':  
+                scoreRemove();
+                break; 
+			case '5':
+				scoreFileo(); 
+				break;
+			case '6':
+				scoreFilei();
+				break;
+			case '0':
+				zhuCaiDan();
+            default: 
+				scoreMgr();
+                break;  
+        }  
+	} 
+	
+};
+
+//------------------------------------------------------------------------------
+
+void scoreAdd(){
+	ScoreSvcImpl scoreSvc;
+	Score score;
+	string s_name;
+	string courseName;
+	string mark;
+	
+	char flag='0';
+	while(flag == '0'){
+		cout<<"\n输入成绩："<<endl;
+		
+		cout<<"输入学生姓名：";
+		cin>>s_name;
+		
+		cout<<"输入课程名称："; 
+		cin>>courseName; 
+		
+		cout<<"输入得分：";
+		cin>>mark;
+	
+		score.setS_name(s_name);
+		score.setCourseName(courseName);
+		score.setMark(mark);
+		
+		scoreSvc.addScore(score);
+		
+		cout<<"输入结束,是否继续输入,按 0 键继续,否则退出。"<<endl;    
+        flag = getch();                                         
+        fflush(stdin);
+	}
+	
+	scoreMgr();
+	
+}; 
+
+//------------------------------------------------------------------------------
+
+void scoreQuery(){
+	
+	string s_name;
+	string courseName; 
+	Score score;
+	ScoreSvcImpl scoreSvc;
+	
+	char flag='0';
+	while(flag == '0'){
+		
+		cout<<"\n\n输入学生姓名：";
+		cin>>s_name;
+		cout<<"\n输入课程名称：";
+		cin>>courseName;
+		
+		score = scoreSvc.queryScore(s_name, courseName);
+		
+		if(score.getMark() == "00000000"){
+			cout<<"\n查询的成绩不存在,是否继续查询,按 0 键继续,否则退出。";
+			flag = getch();
+			fflush(stdin);
+		} else {
+			cout<<"\n成绩是："+score.getMark()<<endl;
+			cout<<"\n查询结束,是否继续查询,按 0 键继续,否则退出。"<<endl;    
+        	flag = getch();                                         
+        	fflush(stdin);
+		}
+		
+	}
+	
+	scoreMgr();
+	
+};
+
+void scoreModify(){
+	
+	string s_name;
+	string courseName;
+	string mark;
+	
+	Score score;
+	ScoreSvcImpl scoreSvc;
+	
+	char flag='0';
+	while(flag == '0'){
+		
+		cout<<"\n输入要修改成绩的学生姓名：";
+		cin>>s_name;
+		cout<<"\n输入要修改成绩的课程："; 
+		cin>>courseName;
+		
+		score = scoreSvc.queryScore(s_name, courseName);
+		
+		if(score.getMark() == "00000000"){
+			cout<<"\n想要修改的成绩不存在,是否继续修改,按 0 键继续,否则退出。";
+			flag = getch();
+			fflush(stdin);
+		} else {
+			
+			cout<<"\n\n输入修改后的分数：";
+			cin>>mark;
+			
+			score.setS_name(s_name);
+			score.setCourseName(courseName);
+			score.setMark(mark); 
+			
+			scoreSvc.modifyScore(score);
+			
+			cout<<"\n修改结束,是否继续修改,按 0 键继续,否则退出。"<<endl;    
+        	flag = getch();                                         
+        	fflush(stdin);
+		}
+		
+	} 
+	
+	scoreMgr();
+	
+};
+
+//------------------------------------------------------------------------------
+
+void scoreRemove(){
+	
+	string s_name;
+	string courseName;
+	ScoreSvcImpl scoreSvc;
+	
+	char flag='0';
+	while(flag == '0'){
+		
+		cout<<"\n\n输入要删除成绩的学生姓名：";
+		cin>>s_name;
+		cout<<"\n输入要删除成绩的课程名称：";
+		cin>>courseName; 
+		
+		int n = scoreSvc.removeScore(s_name, courseName);
+		
+		if(n == 1){
+			cout<<"\n删除成功,是否继续删除,按 0 键继续,否则退出。"<<endl;    
+        	flag = getch();                                         
+        	fflush(stdin);
+		} else {
+			cout<<"\n删除失败,是否继续删除,按 0 键继续,否则退出。"<<endl;    
+        	flag = getch();                                         
+        	fflush(stdin);
+		}
+			 
+	}
+
+	scoreMgr();
+	
+};
+
+//------------------------------------------------------------------------------
+
+void scoreFilei(){			//读取数据 
+	
+	ifstream infile; 
+	infile.open("data\\成绩信息.txt",ios::in); 
+	string s;
+	
+	string s_name;
+	string courseName;
+	string mark;
+	
+	Score score; 
+	ScoreSvcImpl scoreSvc;
+	
+	char flag='0';
+	while(true){
+		
+		while(getline(infile,s)){
+			
+			istringstream ss(s);
+			
+			ss>>s_name;
+			ss>>courseName;
+			ss>>mark;
+			
+			score.setS_name(s_name);
+			score.setCourseName(courseName);
+			score.setMark(mark);
+			
+			scoreSvc.addScore(score);
+		}
+		
+		infile.close();
+		cout<<"读取成功，按任意键退出"<<endl;    
+        flag = getch();
+        break; 
+	}
+	
+	scoreMgr();
+	
+};
+
+//------------------------------------------------------------------------------
+
+void scoreFileo(){			//写入数据(写入之前清空文件)
+	
+	ofstream ofile;
+	ofile.open("data\\成绩信息.txt", ios::out | ios::trunc );
+	vector<string>tokens;
+	string mark;
+	
+	char flag='0';
+	while(true){
+	
+		map<string, string>::iterator iter;
+		for(iter = scoreMap.begin(); iter != scoreMap.end(); iter++) {
+			
+			Tokenize(iter->first, tokens, "|");
+	
+			ofile<<	tokens[0]	+ "\t"<<
+					tokens[1]	+ "\t"<<
+					iter->second+ "\t"<<endl;   		
+		
+		}
+	
+		ofile.close();
+		cout<<"写入成功，按任意键退出"<<endl;    
+        flag = getch();
+       	break; 
+	}
+	
+	scoreMgr();
+	
+}; 
+
+//------------------------------------------------------------------------------
 
 int main(){
 	
