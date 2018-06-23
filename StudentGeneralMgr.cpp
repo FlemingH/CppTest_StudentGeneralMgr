@@ -365,6 +365,9 @@ void scoreRemove();
 void scoreFileo();
 void scoreFilei();
 
+void avgScore();
+void hlScore();
+
 //字符串分割函数 
 void Tokenize(const string& str, vector<string>& tokens, const string& delimiters)
 {
@@ -382,6 +385,18 @@ void Tokenize(const string& str, vector<string>& tokens, const string& delimiter
     pos = str.find_first_of(delimiters, lastPos);
   }
 }
+
+//模板函数：将string类型变量转换为常用的数值类型（此方法具有普遍适用性）  
+template <class Type>  
+Type stringToNum(const string& str)  
+{  
+    istringstream iss(str);  
+    Type num;  
+    iss >> num;  
+    return num;      
+}  
+
+//------------------------------------------------------------------------------
 
 void zhuCaiDan(){
 	
@@ -425,7 +440,7 @@ void zhuCaiDan(){
             	scoreMgr();
                 break;  
             case '4':  
-              	//scoreAys();
+              	scoreAys();
                 break;  
 			case '0':
 				exit(0);
@@ -1352,7 +1367,6 @@ void scoreFileo(){			//写入数据(写入之前清空文件)
 	
 	ofstream ofile;
 	ofile.open("data\\成绩信息.txt", ios::out | ios::trunc );
-	vector<string>tokens;
 	string mark;
 	
 	char flag='0';
@@ -1361,6 +1375,7 @@ void scoreFileo(){			//写入数据(写入之前清空文件)
 		map<string, string>::iterator iter;
 		for(iter = scoreMap.begin(); iter != scoreMap.end(); iter++) {
 			
+			vector<string>tokens;
 			Tokenize(iter->first, tokens, "|");
 	
 			ofile<<	tokens[0]	+ "\t"<<
@@ -1380,6 +1395,179 @@ void scoreFileo(){			//写入数据(写入之前清空文件)
 }; 
 
 //------------------------------------------------------------------------------
+
+void scoreAys(){
+	
+	system("cls"); 
+	cout<<"\n\n\n";
+	cout<<"\t-----------------------------------------------------"<<endl;  
+    cout<<"\t-----------------------------------------------------"<<endl;  
+    cout<<"\t||                                                 ||"<<endl;  
+    cout<<"\t||                     成绩分析                    ||"<<endl;  
+    cout<<"\t||                                                 ||"<<endl;  
+    cout<<"\t-----------------------------------------------------"<<endl;  
+    cout<<"\t-----------------------------------------------------"<<endl;  
+    cout<<"\t||                                                 ||"<<endl;  
+    cout<<"\t||                                                 ||"<<endl;  
+    cout<<"\t||                  ◆1.平均分                     ||"<<endl;  
+    cout<<"\t||                  ◆2.最高/低分                  ||"<<endl;
+	cout<<"\t||                  ◆0.返回                       ||"<<endl;  
+    cout<<"\t||                                                 ||"<<endl;  
+    cout<<"\t||                                                 ||"<<endl;  
+    cout<<"\t-----------------------------------------------------"<<endl;  
+	cout<<"\t-----------------------------------------------------"<<endl; 
+	
+	char x;      
+    bool flag = true;  
+    while(flag)  
+    {                      
+        x = getch();  
+        system("cls");  
+        fflush(stdin);  
+        switch(x)  
+        {  
+            case '1':  
+				avgScore(); 
+                break;  
+            case '2':  
+           		hlScore();
+                break;
+			case '0':
+				zhuCaiDan();
+            default: 
+				scoreAys();
+                break;  
+        }  
+	} 
+	
+};
+
+//------------------------------------------------------------------------------
+
+void avgScore(){
+	
+	string courseName;
+	vector<string>tokens;
+	
+	char flag='0';
+	while(flag == '0'){
+		stringstream ss;
+		float sum = 0; 
+		int count = 0; 
+		
+		cout<<"\n输入要查询平均分的课程名称：";
+		cin>>courseName; 
+		
+		map<string, string>::iterator iter;
+		for(iter = scoreMap.begin(); iter != scoreMap.end(); iter++) {
+	    		
+	    	Tokenize(iter->first, tokens, "|");
+	    	if(tokens[1] == courseName){
+	    		sum = sum + stringToNum<float>(iter->second);
+	    		count++;
+	    	} 
+	    	
+		}
+		 
+		if(count == 0){
+			cout<<"\n查询失败,是否继续查询,按 0 键继续,否则退出。"<<endl;    
+        	flag = getch();                                         
+        	fflush(stdin);
+		} else {
+			float avg = sum/count;
+			string res;
+		    ss << avg;
+		    ss >> res;
+			cout<<"\n"+courseName+"的平均分是："+res<<endl;		
+			cout<<"查询成功,是否继续查询,按 0 键继续,否则退出。"<<endl;    
+        	flag = getch();                                         
+        	fflush(stdin);
+		}
+			 
+	}
+	
+	scoreAys();
+	
+};
+
+//------------------------------------------------------------------------------
+
+void hlScore(){
+	
+	string courseName;
+	vector<string>tokens; 
+	
+	char flag='0';
+	while(flag == '0'){
+		
+		stringstream ss1;
+		stringstream ss2;
+		float max = 0;
+		float min = 0; 
+		int count = 0;
+		
+		cout<<"\n输入要查询最高/低分的课程名称：";
+		cin>>courseName; 
+		
+		map<string, string>::iterator iter;
+		
+		for(iter = scoreMap.begin(); iter != scoreMap.end(); iter++) {
+			
+			Tokenize(iter->first, tokens, "|");
+	    	
+			if(tokens[1] == courseName){
+				max = stringToNum<float>(iter->second);
+				min = stringToNum<float>(iter->second);
+				break;
+			}
+			
+		}
+		
+		for(iter = scoreMap.begin(); iter != scoreMap.end(); iter++) {
+	    		
+	    	Tokenize(iter->first, tokens, "|");
+	    	
+			if(tokens[1] == courseName){
+	    		
+
+	    		if(stringToNum<float>(iter->second) > max){
+	    			max = stringToNum<float>(iter->second);
+	    		}
+	    		
+	    		if(stringToNum<float>(iter->second) < min){
+	    			min = stringToNum<float>(iter->second);
+	    		} 
+	    		
+	    		count++; 
+	    	} 
+	    	
+		}
+		
+		if(count == 0){
+			cout<<"\n查询失败,是否继续查询,按 0 键继续,否则退出。"<<endl;    
+        	flag = getch();                                         
+        	fflush(stdin);
+		} else {
+			
+			string res1;
+			string res2;
+		    
+		    ss1 << max;
+		    ss1 >> res1;
+			ss2 << min;
+			ss2 >> res2;
+		
+			cout<<"\n"+courseName+"的最高分是："+res1+"，最低分是："+res2<<endl;		
+			cout<<"查询成功,是否继续查询,按 0 键继续,否则退出。"<<endl;    
+        	flag = getch();                                         
+        	fflush(stdin);
+		}
+			 
+	}
+	
+	scoreAys();
+	
+};
 
 int main(){
 	
